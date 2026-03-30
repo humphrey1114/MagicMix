@@ -267,6 +267,17 @@ const state = {
   workspaceDialog:null,
   dashboard:{ activeMenu:"首页", activeCategory:"推荐", search:"", quickLink:"", quickStatus:"支持淘宝、抖音、拼多多等链接", activeFeature:"一键成片", previewIndex:null },
   authMode:"login",
+  auth:{
+    loginEmail:"demo@magicmix.com",
+    loginPassword:"demo123",
+    loginRemember:true,
+    registerUsername:"",
+    registerEmail:"",
+    registerPassword:"",
+    registerConfirm:"",
+    agreeTerms:true,
+    isSubmitting:false,
+  },
   smartVideo:{ mode:"product", stage:"empty", productLink:"", description:"", industry:"电商", style:"种草", duration:30, count:5, voice:"", bgm:"", subtitle:"" },
   aiCopy:{ inputType:"keyword", prompt:"", style:"剧情植入", generated:false, isGenerating:false, activeScript:0, customStyles:[], isAddingCustomStyle:false, customStyleDraft:"" },
   smartEdit:{ activeClip:0, hookMaterial:0, transition:"淡入淡出", duration:3, voiceCopy:"姐妹们！这个养生茶我真的要安利一百遍！", rightCategory:"Hook", ratio:"16:9", timelineZoom:1 },
@@ -912,10 +923,9 @@ function renderLandingPage(){
             <button class="btn btn--dark" data-route="register">免费体验</button>
             <button class="btn btn--ghost-dark" data-route="dashboard-home">观看演示</button>
           </div>
-          <div class="landing-preview">
-            <aside class="preview-sidebar"><span></span><span></span><span></span><span></span><span class="preview-divider"></span><span></span><span></span></aside>
-            <div class="preview-main"><div class="preview-line preview-line--long"></div><div class="preview-line preview-line--medium"></div><div class="preview-cards"><div class="preview-card"></div><div class="preview-card"></div><div class="preview-card"></div></div><div class="preview-line preview-line--full"></div><div class="preview-line preview-line--short"></div></div>
-          </div>
+          <figure class="landing-preview">
+            <img src="/public/landing-homepage.png" alt="MagicMix 控制台首页预览" />
+          </figure>
         </section>
         <section class="landing-section" id="landing-features">
           <div class="landing-copy"><span>核心能力</span><h3>从素材到发布，全链路 AI 自动化</h3><p>每个功能模块独立可用，自由组合，不强制走完整个流程</p></div>
@@ -2638,6 +2648,143 @@ function renderVoiceSettingsPage(){
 }
 
 /* ── Route Renderer ── */
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+}
+
+function submitAuthForm(){
+  if(state.auth.isSubmitting) return;
+  const auth = state.auth;
+  const isLogin = state.authMode === "login";
+
+  if(isLogin){
+    const email = auth.loginEmail.trim();
+    const password = auth.loginPassword;
+    if(!isValidEmail(email)){
+      showToast("请输入有效的邮箱地址。");
+      return;
+    }
+    if(password.length < 6){
+      showToast("密码至少需要 6 位。");
+      return;
+    }
+    state.auth.isSubmitting = true;
+    renderApp();
+    api.login(email, password).then(r => {
+      state.auth.isSubmitting = false;
+      if(r.ok){
+        navigate("dashboard-home");
+        showToast("登录成功，欢迎回来。","success");
+      } else {
+        showToast(r.data.error || "登录失败，请检查邮箱和密码。");
+        renderApp();
+      }
+    });
+    return;
+  }
+
+  const username = auth.registerUsername.trim();
+  const email = auth.registerEmail.trim();
+  const password = auth.registerPassword;
+  const confirm = auth.registerConfirm;
+  if(username.length < 2){
+    showToast("用户名至少需要 2 个字符。");
+    return;
+  }
+  if(!isValidEmail(email)){
+    showToast("请输入有效的邮箱地址。");
+    return;
+  }
+  if(password.length < 6){
+    showToast("注册密码至少需要 6 位。");
+    return;
+  }
+  if(password !== confirm){
+    showToast("两次输入的密码不一致。");
+    return;
+  }
+  if(!auth.agreeTerms){
+    showToast("请先同意服务协议与隐私政策。");
+    return;
+  }
+  state.auth.isSubmitting = true;
+  renderApp();
+  api.register(username, email, password).then(r => {
+    state.auth.isSubmitting = false;
+    if(r.ok){
+      navigate("dashboard-home");
+      showToast("注册成功，欢迎使用 MagicMix。","success");
+    } else {
+      showToast(r.data.error || "注册失败，请稍后重试。");
+      renderApp();
+    }
+  });
+}
+
+function renderAuthPage(mode){
+  const isLogin = mode==="login";
+  const auth = state.auth;
+  const providerCards = [
+    { id:"google", label:"Google", caption:"谷歌账号", badge:"G" },
+    { id:"github", label:"GitHub", caption:"开发者账号", badge:"GH" },
+    { id:"feishu", label:"飞书", caption:"团队账号", badge:"飞" },
+  ];
+  return `
+    <div class="auth-shell">
+      <div class="auth-brand-wrap">${brandButton("landing","",true)}</div>
+      <section class="auth-card auth-card--upgraded">
+        <h1>${isLogin?"欢迎回来":"创建账号"}</h1>
+        <p>${isLogin?"登录你的账号，继续创作与编辑项目":"注册后即可进入工作台，开始生成视频、保存资产与继续创作"}</p>
+        <div class="auth-tabs">
+          <button class="${classNames("auth-tab",isLogin&&"is-active")}" data-auth-mode="login">登录</button>
+          <button class="${classNames("auth-tab",!isLogin&&"is-active")}" data-auth-mode="register">注册</button>
+        </div>
+        <div class="auth-form">
+          ${isLogin ? `
+            <label><span>邮箱</span><input data-field="authLoginEmail" type="email" placeholder="请输入邮箱地址" value="${escapeHtml(auth.loginEmail)}" /></label>
+            <label><span>密码</span><input data-field="authLoginPassword" type="password" placeholder="请输入密码" value="${escapeHtml(auth.loginPassword)}" /></label>
+            <div class="auth-form-meta">
+              <label class="auth-check-row"><input type="checkbox" data-auth-check="loginRemember" ${auth.loginRemember ? "checked" : ""} /><span>记住我</span></label>
+              <button class="auth-inline-link" type="button" data-action="auth-forgot-password">忘记密码？</button>
+            </div>
+            <div class="auth-demo-card">
+              <div>
+                <strong>演示账号</strong>
+                <small>demo@magicmix.com / demo123</small>
+              </div>
+              <button class="btn btn--ghost btn--small" type="button" data-action="auth-fill-demo">一键填入</button>
+            </div>
+          ` : `
+            <label><span>用户名</span><input data-field="authRegisterUsername" type="text" placeholder="请输入用户名" value="${escapeHtml(auth.registerUsername)}" /></label>
+            <label><span>邮箱</span><input data-field="authRegisterEmail" type="email" placeholder="请输入邮箱地址" value="${escapeHtml(auth.registerEmail)}" /></label>
+            <label><span>设置密码</span><input data-field="authRegisterPassword" type="password" placeholder="至少 6 位" value="${escapeHtml(auth.registerPassword)}" /></label>
+            <label><span>确认密码</span><input data-field="authRegisterConfirm" type="password" placeholder="再次输入密码" value="${escapeHtml(auth.registerConfirm)}" /></label>
+            <label class="auth-check-row auth-check-row--block"><input type="checkbox" data-auth-check="agreeTerms" ${auth.agreeTerms ? "checked" : ""} /><span>我已阅读并同意《服务协议》与《隐私政策》</span></label>
+          `}
+          <button class="btn btn--light btn--wide" data-action="auth-submit" ${auth.isSubmitting ? "disabled" : ""}>${auth.isSubmitting ? (isLogin ? "登录中..." : "注册中...") : (isLogin ? "登录" : "注册")}</button>
+        </div>
+        <div class="auth-divider"><span>或使用第三方账号继续</span></div>
+        <div class="auth-socials auth-socials--grid">
+          ${providerCards.map(provider=>`
+            <button class="auth-social-btn" type="button" data-action="auth-social" data-provider="${provider.id}">
+              <span class="auth-social-badge auth-social-badge--${provider.id}">${provider.badge}</span>
+              <strong>${provider.label}</strong>
+              <small>${provider.caption}</small>
+            </button>
+          `).join("")}
+        </div>
+        <div class="auth-provider-note">${isLogin ? "邮箱登录已启用；Google / GitHub / 飞书登录接入对应 OAuth 凭证后即可启用。" : "建议先使用邮箱注册完成体验，后续可再接入 Google / GitHub / 飞书统一登录。"}</div>
+        <div class="auth-status-card">
+          <div class="auth-status-item"><span>${icon("check",14)}</span><div><strong>邮箱注册与登录已可用</strong><small>账号创建后会自动进入工作台，并保留本地登录状态</small></div></div>
+          <div class="auth-status-item"><span>${icon("shield",14)}</span><div><strong>密码安全存储</strong><small>当前使用服务端哈希方式保存密码，不会在前端明文落库</small></div></div>
+          <div class="auth-status-item"><span>${icon("users",14)}</span><div><strong>支持团队统一登录扩展</strong><small>Google、GitHub、飞书入口已预留，后续可接企业认证体系</small></div></div>
+        </div>
+        <div class="auth-switch-line">${isLogin?"还没有账号？":"已有账号？"}<button data-auth-mode="${isLogin?"register":"login"}">${isLogin?"立即注册":"去登录"}</button></div>
+      </section>
+      <button class="auth-back-home" data-route="landing">返回首页</button>
+    </div>`;
+}
+
 function renderRoute(){
   switch(state.route){
     case "landing": return renderLandingPage();
@@ -3157,6 +3304,12 @@ document.addEventListener("input", e => {
   if(!field) return;
   const v = e.target.value;
   switch(field){
+    case "authLoginEmail": state.auth.loginEmail = v; break;
+    case "authLoginPassword": state.auth.loginPassword = v; break;
+    case "authRegisterUsername": state.auth.registerUsername = v; break;
+    case "authRegisterEmail": state.auth.registerEmail = v; break;
+    case "authRegisterPassword": state.auth.registerPassword = v; break;
+    case "authRegisterConfirm": state.auth.registerConfirm = v; break;
     case "dashboardQuickLink": state.dashboard.quickLink=v; break;
     case "dashboardSearch": state.dashboard.search=v; renderApp(); break;
     case "smartProductLink": state.smartVideo.productLink=v; break;
@@ -3201,6 +3354,13 @@ document.addEventListener("input", e => {
 });
 
 document.addEventListener("change", e => {
+  const authCheck = e.target.dataset.authCheck;
+  if(authCheck){
+    if(authCheck==="loginRemember") state.auth.loginRemember = !!e.target.checked;
+    if(authCheck==="agreeTerms") state.auth.agreeTerms = !!e.target.checked;
+    return;
+  }
+
   const importInput = e.target.dataset.importInput;
   if(importInput){
     const file = e.target.files && e.target.files[0];
@@ -3303,6 +3463,11 @@ document.addEventListener("change", e => {
 });
 
 document.addEventListener("keydown", e => {
+  if((state.route==="login" || state.route==="register") && e.key==="Enter" && document.activeElement?.closest(".auth-form")){
+    e.preventDefault();
+    submitAuthForm();
+    return;
+  }
   if(e.key==="Escape" && state.workspaceDialog){
     closeWorkspaceDialog();
     return;
@@ -3312,6 +3477,48 @@ document.addEventListener("keydown", e => {
     renderApp();
   }
 });
+
+document.addEventListener("click", e => {
+  const authSubmit = e.target.closest("[data-action='auth-submit']");
+  if(authSubmit){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    submitAuthForm();
+    return;
+  }
+
+  const authSocial = e.target.closest("[data-action='auth-social']");
+  if(authSocial){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    const provider = authSocial.dataset.provider;
+    const messages = {
+      google:"Google 登录需要先在部署环境配置 OAuth Client ID / Secret。",
+      github:"GitHub 登录需要先配置 OAuth App 的 Client ID / Secret。",
+      feishu:"飞书登录需要先配置企业自建应用与回调地址。",
+    };
+    showToast(messages[provider] || "该第三方登录尚未配置。");
+    return;
+  }
+
+  const authForgotPassword = e.target.closest("[data-action='auth-forgot-password']");
+  if(authForgotPassword){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    showToast("当前演示站暂未接入邮件重置密码，可先使用演示账号体验。");
+    return;
+  }
+
+  const authFillDemo = e.target.closest("[data-action='auth-fill-demo']");
+  if(authFillDemo){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    state.auth.loginEmail = "demo@magicmix.com";
+    state.auth.loginPassword = "demo123";
+    renderApp();
+    showToast("已填入演示账号。","success");
+  }
+}, true);
 
 window.addEventListener("hashchange", () => { initRoute(); renderApp({ preserveScroll:false }); });
 
