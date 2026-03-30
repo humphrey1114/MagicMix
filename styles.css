@@ -7875,7 +7875,7 @@ button {
 
 /* Smart Edit Timeline Rebuild */
 .workspace-shell--editor {
-  grid-template-rows: 68px minmax(0, 1fr) 272px;
+  grid-template-rows: 68px minmax(0, 1fr) 244px;
 }
 
 .workspace-shell--editor .se-left {
@@ -7929,8 +7929,8 @@ button {
 
 .workspace-shell--editor .se-timeline {
   display: grid;
-  gap: 12px;
-  padding: 10px 18px 34px;
+  gap: 10px;
+  padding: 8px 18px 28px;
   background: linear-gradient(180deg, rgba(246, 241, 252, 0.98) 0%, #ffffff 100%);
   border-top: 1px solid rgba(168, 85, 247, 0.14);
 }
@@ -7939,11 +7939,11 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 52px;
-  padding: 10px 14px;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   border: 1px solid rgba(127, 91, 173, 0.16);
-  border-radius: 16px;
+  border-radius: 14px;
   background: linear-gradient(135deg, #ebe3f6 0%, #ddd2ef 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
@@ -7952,7 +7952,7 @@ button {
 .workspace-shell--editor .se-player-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .workspace-shell--editor .se-player-right {
@@ -7976,8 +7976,8 @@ button {
 
 .workspace-shell--editor .se-ctrl-btn,
 .workspace-shell--editor .se-zoom-btn {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   padding: 0;
 }
 
@@ -7991,14 +7991,14 @@ button {
 
 .workspace-shell--editor .se-action-btn,
 .workspace-shell--editor .se-action-primary {
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: 30px;
+  padding: 0 10px;
 }
 
 .workspace-shell--editor .se-player-time {
-  min-width: 108px;
+  min-width: 96px;
   color: #5f4d77;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   text-align: center;
 }
@@ -8006,45 +8006,45 @@ button {
 .workspace-shell--editor .se-zoom-controls {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
+  gap: 6px;
+  padding: 3px 7px;
   border: 1px solid rgba(109, 81, 152, 0.12);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
 }
 
 .workspace-shell--editor .se-zoom-range {
-  width: 96px;
+  width: 84px;
   accent-color: #a855f7;
 }
 
 .workspace-shell--editor .se-zoom-value {
-  min-width: 54px;
-  min-height: 30px;
-  padding: 0 10px;
-  font-size: 12px;
+  min-width: 50px;
+  min-height: 26px;
+  padding: 0 8px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 .workspace-shell--editor .se-timeline-body {
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
-  gap: 12px;
+  gap: 10px;
   min-height: 0;
 }
 
 .workspace-shell--editor .se-timeline-side {
   display: grid;
-  grid-template-rows: 38px minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px;
+  grid-template-rows: 32px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
 }
 
 .workspace-shell--editor .se-timeline-side-spacer {
   display: flex;
   align-items: flex-end;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   color: #8c7ea2;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -8053,7 +8053,7 @@ button {
 .workspace-shell--editor .se-timeline-scroll {
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 6px;
+  padding-bottom: 12px;
 }
 
 .workspace-shell--editor .se-timeline-scroll::-webkit-scrollbar {
@@ -8070,14 +8070,14 @@ button {
 .workspace-shell--editor .se-timeline-scroll-inner {
   position: relative;
   display: grid;
-  gap: 10px;
-  min-height: 156px;
+  gap: 8px;
+  min-height: 128px;
 }
 
 .workspace-shell--editor .se-timeline-ruler {
   position: relative;
-  height: 38px;
-  border-radius: 14px;
+  height: 30px;
+  border-radius: 12px;
   border: 1px solid rgba(168, 85, 247, 0.12);
   background: rgba(255, 255, 255, 0.82);
   overflow: hidden;
@@ -8085,8 +8085,8 @@ button {
 
 .workspace-shell--editor .se-timeline-tick {
   position: absolute;
-  top: 6px;
-  bottom: 6px;
+  top: 4px;
+  bottom: 4px;
   width: 1px;
   transform: translateX(-0.5px);
 }
@@ -8096,29 +8096,29 @@ button {
   left: 0;
   bottom: 0;
   width: 1px;
-  height: 10px;
+  height: 8px;
   background: rgba(135, 110, 170, 0.22);
 }
 
 .workspace-shell--editor .se-timeline-tick.is-major i {
-  height: 16px;
+  height: 12px;
   background: rgba(101, 74, 144, 0.48);
 }
 
 .workspace-shell--editor .se-timeline-tick strong {
   position: absolute;
   top: 0;
-  left: 6px;
+  left: 4px;
   color: #69587f;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .workspace-shell--editor .se-playhead {
   position: absolute;
-  top: 40px;
-  bottom: 10px;
+  top: 32px;
+  bottom: 18px;
   width: 2px;
   border-radius: 999px;
   background: linear-gradient(180deg, #ec4899 0%, #a855f7 100%);
@@ -8139,17 +8139,21 @@ button {
 
 .workspace-shell--editor .se-track-blocks {
   display: flex;
-  gap: 10px;
-  min-height: 62px;
+  gap: 8px;
+  min-height: 50px;
   overflow: visible;
+}
+
+.workspace-shell--editor .se-track-row:last-child .se-track-blocks {
+  min-height: 40px;
 }
 
 .workspace-shell--editor .se-track-block,
 .workspace-shell--editor .se-track-lane .se-track-block {
   flex: 0 0 auto;
-  min-height: 62px;
-  padding: 11px 12px 10px;
-  border-radius: 14px;
+  min-height: 50px;
+  padding: 8px 10px;
+  border-radius: 12px;
   border: 1px solid rgba(122, 92, 169, 0.14);
   box-shadow: none;
 }
@@ -8160,10 +8164,18 @@ button {
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   color: #ffffff;
   overflow: hidden;
   text-align: left;
+}
+
+.workspace-shell--editor .se-track-row:last-child .se-track-block {
+  min-height: 40px;
+  padding: 6px 10px;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 10px;
 }
 
 .workspace-shell--editor .se-track-block.is-active {
@@ -8185,31 +8197,45 @@ button {
 }
 
 .workspace-shell--editor .se-block-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .workspace-shell--editor .se-block-copy {
-  font-size: 12px;
-  line-height: 1.42;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.workspace-shell--editor .se-track-row:last-child .se-block-copy {
+  font-size: 10px;
+  line-height: 1.25;
 }
 
 .workspace-shell--editor .se-block-time {
   align-self: flex-end;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   opacity: 0.72;
+}
+
+.workspace-shell--editor .se-track-row:last-child .se-block-time {
+  font-size: 9px;
 }
 
 .workspace-shell--editor .se-track-label {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 62px;
+  min-height: 50px;
   padding: 0;
   color: #35264a;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+}
+
+.workspace-shell--editor .se-track-row:last-child .se-track-label,
+.workspace-shell--editor .se-timeline-side > .se-track-label:nth-child(3) {
+  min-height: 40px;
 }
 
 .workspace-shell--editor .se-timeline-side .se-track-label {
@@ -8236,7 +8262,7 @@ button {
 
 @media (max-width: 1560px) {
   .workspace-shell--editor {
-    grid-template-rows: 66px minmax(0, 1fr) 252px;
+    grid-template-rows: 66px minmax(0, 1fr) 232px;
   }
 
   .workspace-shell--editor .se-phone {
@@ -8244,10 +8270,374 @@ button {
   }
 
   .workspace-shell--editor .se-timeline {
-    padding: 10px 16px 30px;
+    padding: 8px 16px 26px;
   }
 
   .workspace-shell--editor .se-zoom-range {
-    width: 76px;
+    width: 70px;
   }
+}
+
+/* ===== 2026 Workspace Compactness Pass ===== */
+:root {
+  --radius-xl: 26px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 12px;
+  --radius-xs: 10px;
+  --fs-h1: 24px;
+  --fs-h2: 16px;
+  --fs-h3: 13px;
+  --fs-body: 13px;
+  --fs-small: 12px;
+  --fs-caption: 11px;
+  --fs-input: 13px;
+  --fs-btn: 13px;
+  --form-font-size: 13px;
+  --form-placeholder-size: 13px;
+}
+
+.btn {
+  min-height: 38px;
+  padding: 0 15px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.btn--small {
+  min-height: 30px;
+}
+
+.workspace-topbar {
+  min-height: 60px;
+  padding: 10px 20px;
+  gap: 18px;
+}
+
+.workspace-topbar-main {
+  gap: 14px;
+}
+
+.workspace-topbar-actions,
+.workspace-topbar-extra,
+.page-head-actions {
+  gap: 10px;
+}
+
+.workspace-breadcrumb,
+.workspace-breadcrumb-path {
+  gap: 8px;
+}
+
+.workspace-breadcrumb strong {
+  font-size: 13px;
+}
+
+.workspace-breadcrumb p {
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.workspace-main-panel,
+.workspace-page {
+  padding: 14px 18px 18px;
+}
+
+.workspace-page {
+  gap: 14px;
+}
+
+.workspace-two-column {
+  grid-template-columns: 332px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 18px 18px;
+}
+
+.workspace-sidebar-panel {
+  padding: 16px;
+  border-radius: 18px;
+}
+
+.workspace-section {
+  margin-bottom: 10px;
+}
+
+.workspace-section h3,
+.workspace-block h2,
+.analytics-panel h2 {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.workspace-section-head,
+.workspace-block-head {
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.workspace-block,
+.results-panel,
+.script-results,
+.asset-stage,
+.upload-stage,
+.timeline-track-panel,
+.analytics-panel,
+.dashboard-stat-card,
+.analytics-stat-card,
+.result-card,
+.asset-video-card,
+.material-card,
+.favorite-card,
+.upload-item,
+.distribution-metric-card,
+.distribution-channel-card,
+.distribution-param-card,
+.script-library-board {
+  border-radius: 18px;
+}
+
+.workspace-block,
+.timeline-track-panel,
+.upload-list-panel,
+.analytics-panel {
+  padding: 16px;
+  margin-top: 18px;
+}
+
+.workspace-block-head p {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.segmented-control {
+  padding: 3px;
+  border-radius: 14px;
+}
+
+.segment-button {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+
+.selector-chip,
+.page-tab {
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+
+.selector-chip--compact {
+  min-height: 28px;
+  padding: 0 10px;
+}
+
+.workspace-inline-btn,
+.workspace-duration-label {
+  min-height: 26px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+.workspace-range-head {
+  margin-bottom: 8px;
+}
+
+.workspace-stack-cards,
+.workspace-form-grid,
+.workspace-import-row,
+.workspace-inline-input-row,
+.workspace-duration-custom,
+.workspace-title-meta,
+.workspace-summary-tags {
+  gap: 8px;
+}
+
+.workspace-input-box input,
+.page-search-input,
+.workspace-select {
+  min-height: 42px;
+  padding: 0 13px;
+  border-radius: 13px;
+  font-size: 13px;
+}
+
+.workspace-textarea-box textarea,
+.editor-copy-box,
+.se-copy-box {
+  min-height: 104px;
+  padding: 12px 13px;
+  border-radius: 13px;
+  font-size: 13px;
+}
+
+.workspace-select {
+  padding-right: 40px;
+}
+
+.workspace-import-btn {
+  min-height: 42px;
+  padding: 0 14px;
+}
+
+.workspace-select-icon {
+  right: 14px;
+}
+
+.workspace-field-label {
+  font-size: 12px;
+}
+
+.workspace-field-hint,
+.workspace-duration-custom small,
+.workspace-cost-note {
+  font-size: 11px;
+}
+
+.workspace-summary-bar {
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+}
+
+.workspace-summary-bar span,
+.workspace-summary-bar strong {
+  font-size: 12px;
+}
+
+.upload-placeholder-card {
+  min-height: 176px;
+  gap: 6px;
+}
+
+.empty-stage h2 {
+  margin: 10px 0 6px;
+  font-size: 16px;
+}
+
+.empty-stage p {
+  font-size: 12px;
+}
+
+.empty-stage-steps {
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.empty-step-card {
+  padding: 12px;
+}
+
+.empty-step-card strong {
+  font-size: 16px;
+}
+
+.empty-step-card h4 {
+  margin: 6px 0 4px;
+  font-size: 13px;
+}
+
+.empty-step-card p {
+  font-size: 11px;
+}
+
+.results-grid {
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.result-card {
+  padding-top: 40px;
+}
+
+.result-thumb,
+.asset-video-thumb,
+.timeline-media-thumb {
+  min-height: 124px;
+}
+
+.asset-video-content {
+  padding: 10px 12px 12px;
+}
+
+.material-card,
+.favorite-card {
+  padding: 13px;
+}
+
+.material-thumb {
+  min-height: 150px;
+  margin-bottom: 10px;
+}
+
+.script-library-board {
+  gap: 10px;
+  min-height: 340px;
+  padding: 12px;
+}
+
+.script-library-card,
+.script-library-add {
+  width: 220px;
+}
+
+.script-library-thumb {
+  height: 156px;
+}
+
+.script-library-footer {
+  min-height: 46px;
+  padding: 10px 12px;
+}
+
+.upload-dropzone {
+  min-height: 150px;
+  border-radius: 14px;
+}
+
+.upload-item {
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.upload-item + .upload-item {
+  margin-top: 10px;
+}
+
+.upload-file-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.queue-row {
+  font-size: 12px;
+}
+
+.analytics-stat-grid,
+.analytics-bottom-grid {
+  gap: 14px;
+}
+
+.analytics-stat-card {
+  padding: 14px 16px 16px;
+}
+
+.analytics-panel {
+  padding: 14px;
+}
+
+.trend-chart {
+  gap: 10px;
+  min-height: 280px;
+  margin-top: 16px;
+}
+
+.distribution-metric-card,
+.distribution-channel-card,
+.distribution-param-card {
+  padding: 14px;
 }

@@ -374,7 +374,7 @@ function navigate(route, options={}){
     state.authMode = "login";
     syncDashboardMenu();
     if(location.hash.slice(1)!=="login") history.replaceState(null,"","#login");
-    renderApp();
+    renderApp({ preserveScroll:false });
     showToast("请先登录。");
     return;
   }
@@ -385,7 +385,7 @@ function navigate(route, options={}){
   syncDashboardMenu();
   if(location.hash.slice(1)!==route) history.replaceState(null,"",`#${route}`);
   window.scrollTo({ top:0, behavior:"auto" });
-  renderApp();
+  renderApp({ preserveScroll:false });
 }
 
 function initRoute(){
@@ -528,6 +528,43 @@ function renderImportableSelectField({ iconName = "", label, field, value = "", 
       </div>
     `,
     hint,
+  });
+}
+
+const preservedScrollSelectors = [
+  ".workspace-sidebar-panel",
+  ".workspace-main-panel",
+  ".workspace-page",
+  ".settings-tabs",
+  ".settings-panel",
+  ".se-left",
+  ".se-right",
+  ".se-timeline-scroll",
+];
+
+function captureScrollPositions(){
+  const positions = {};
+  preservedScrollSelectors.forEach(selector => {
+    document.querySelectorAll(selector).forEach((el, index) => {
+      positions[`${selector}:${index}`] = {
+        top: el.scrollTop,
+        left: el.scrollLeft,
+      };
+    });
+  });
+  return positions;
+}
+
+function restoreScrollPositions(positions = {}){
+  requestAnimationFrame(() => {
+    preservedScrollSelectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach((el, index) => {
+        const saved = positions[`${selector}:${index}`];
+        if(!saved) return;
+        el.scrollTop = saved.top;
+        el.scrollLeft = saved.left;
+      });
+    });
   });
 }
 
@@ -2624,8 +2661,10 @@ function renderRoute(){
   }
 }
 
-function renderApp(){
+function renderApp({ preserveScroll = true } = {}){
+  const scrollPositions = preserveScroll ? captureScrollPositions() : null;
   app.innerHTML = `${renderRoute()}${state.route==="dashboard-home" ? renderInspirationPreviewModal() : ""}${renderWorkspaceDialog()}${state.toast?`<div class="app-toast app-toast--${state.toast.tone}"><span>${state.toast.message}</span></div>`:""}`;
+  if(scrollPositions) restoreScrollPositions(scrollPositions);
   // Lazy-load stats from API when on dashboard
   if(state.route==="dashboard-home" && api.isLoggedIn() && !state._statsLoaded){
     state._statsLoaded = true;
@@ -3274,7 +3313,7 @@ document.addEventListener("keydown", e => {
   }
 });
 
-window.addEventListener("hashchange", () => { initRoute(); renderApp(); });
+window.addEventListener("hashchange", () => { initRoute(); renderApp({ preserveScroll:false }); });
 
 initRoute();
-renderApp();
+renderApp({ preserveScroll:false });
