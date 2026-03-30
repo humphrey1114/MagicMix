@@ -10,3 +10,9 @@ magicmix.db-wal
 
 *.log
 .DS_Store
+
+.vercel
+public/index.html
+public/app.js
+public/styles.css
+public/media/

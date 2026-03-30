@@ -264,6 +264,7 @@ const previewVideoLibrary = {
 const state = {
   route:"landing",
   toast:null,
+  openSelect:null,
   workspaceDialog:null,
   dashboard:{ activeMenu:"首页", activeCategory:"推荐", search:"", quickLink:"", quickStatus:"支持淘宝、抖音、拼多多等链接", activeFeature:"一键成片", previewIndex:null },
   authMode:"login",
@@ -278,8 +279,53 @@ const state = {
     agreeTerms:true,
     isSubmitting:false,
   },
-  smartVideo:{ mode:"product", stage:"empty", productLink:"", description:"", industry:"电商", style:"种草", duration:30, count:5, voice:"", bgm:"", subtitle:"" },
-  aiCopy:{ inputType:"keyword", prompt:"", style:"剧情植入", generated:false, isGenerating:false, activeScript:0, customStyles:[], isAddingCustomStyle:false, customStyleDraft:"" },
+  smartVideo:{
+    mode:"product",
+    stage:"empty",
+    productLink:"",
+    productFocus:"抓取主图",
+    description:"",
+    textProductName:"",
+    textGoal:"带货转化",
+    uploadTheme:"",
+    uploadGoal:"素材混剪",
+    industry:"电商",
+    style:"种草",
+    customIndustries:[],
+    customStyles:[],
+    isAddingCustomIndustry:false,
+    customIndustryDraft:"",
+    isAddingCustomStyle:false,
+    customStyleDraft:"",
+    duration:30,
+    count:5,
+    voice:"",
+    bgm:"",
+    subtitle:"",
+  },
+  aiCopy:{
+    inputType:"keyword",
+    prompt:"",
+    keywordInput:"",
+    keywordAudience:"",
+    keywordPlatform:"抖音",
+    keywordFocus:"",
+    linkInput:"",
+    linkPlatform:"自动识别",
+    linkFocus:"自动提炼卖点",
+    linkRequirement:"",
+    rewriteSource:"",
+    rewriteGoal:"口播化重写",
+    rewriteTone:"自然种草",
+    rewriteKeep:"",
+    style:"剧情植入",
+    generated:false,
+    isGenerating:false,
+    activeScript:0,
+    customStyles:[],
+    isAddingCustomStyle:false,
+    customStyleDraft:"",
+  },
   smartEdit:{ activeClip:0, hookMaterial:0, transition:"淡入淡出", duration:3, voiceCopy:"姐妹们！这个养生茶我真的要安利一百遍！", rightCategory:"Hook", ratio:"16:9", timelineZoom:1 },
   timelineEditor:{ library:"素材库", zoom:35, recommendation:0 },
   assets:{ tab:"我的视频", search:"", sort:"最新优先", scriptCards:[{ name:"示例脚本", lines:["Hook","卖点","CTA"] },{ name:"新品开箱", lines:["开场","亮点","下单"] }] },
@@ -474,6 +520,7 @@ function startSmartVideoGeneration(){
 }
 
 function startAiCopyGeneration(){
+  state.aiCopy.prompt = getAiCopyPrimaryText();
   state.aiCopy.isGenerating=true; state.aiCopy.generated=false; renderApp();
   if(startAiCopyGeneration.timer) clearTimeout(startAiCopyGeneration.timer);
   startAiCopyGeneration.timer = setTimeout(()=>{
@@ -512,18 +559,38 @@ function renderPreviewVideo(src, className = "media-preview-video", autoplay = f
 
 function renderSelectControl({ field, value = "", placeholder = "请选择", options = [], labels = {} }){
   const currentValue = value === null || value === undefined ? "" : String(value);
-  const hasCustomValue = currentValue !== "" && !options.map(option => String(option)).includes(currentValue);
+  const optionValues = options.map(option => String(option));
+  const hasCustomValue = currentValue !== "" && !optionValues.includes(currentValue);
+  const currentLabel = currentValue === ""
+    ? placeholder
+    : (labels[currentValue] || currentValue);
+  const isOpen = state.openSelect === field;
+  const normalizedOptions = [
+    ...(placeholder ? [{ value:"", label:placeholder, isPlaceholder:true }] : []),
+    ...(hasCustomValue ? [{ value:currentValue, label:labels[currentValue] || currentValue }] : []),
+    ...options.map(option => {
+      const optionValue = String(option);
+      return { value:optionValue, label:labels[optionValue] || optionValue };
+    }),
+  ];
   return `
-    <div class="workspace-select-wrap">
-      <select class="workspace-select" data-field="${field}">
-        <option value="" ${currentValue === "" ? "selected" : ""}>${placeholder}</option>
-        ${hasCustomValue ? `<option value="${escapeHtml(currentValue)}" selected>${escapeHtml(labels[currentValue] || currentValue)}</option>` : ""}
-        ${options.map(option => {
-          const optionValue = String(option);
-          return `<option value="${escapeHtml(optionValue)}" ${currentValue === optionValue ? "selected" : ""}>${escapeHtml(labels[optionValue] || optionValue)}</option>`;
-        }).join("")}
-      </select>
-      <span class="workspace-select-icon">${icon("chevronDown",14)}</span>
+    <div class="${classNames("workspace-select-wrap", isOpen && "is-open")}" data-select-field="${field}">
+      <button class="${classNames("workspace-select-trigger", currentValue === "" ? "is-placeholder" : "")}" type="button" data-select-toggle="${field}" aria-expanded="${isOpen ? "true" : "false"}">
+        <span class="workspace-select-label">${escapeHtml(currentLabel)}</span>
+        <span class="workspace-select-icon">${icon("chevronDown",14)}</span>
+      </button>
+      ${isOpen ? `
+        <div class="workspace-select-menu">
+          ${normalizedOptions.map(option => `
+            <button
+              class="${classNames("workspace-select-option", currentValue === option.value && "is-selected", option.isPlaceholder && "is-placeholder")}"
+              type="button"
+              data-select-option="${field}"
+              data-select-value="${escapeHtml(option.value)}"
+            >${escapeHtml(option.label)}</button>
+          `).join("")}
+        </div>
+      ` : ""}
     </div>`;
 }
 
@@ -540,6 +607,65 @@ function renderImportableSelectField({ iconName = "", label, field, value = "", 
     `,
     hint,
   });
+}
+
+function applySelectFieldValue(field, v){
+  switch(field){
+    case "smartVideoVoice":
+      state.smartVideo.voice = v;
+      return true;
+    case "smartVideoBgm":
+      state.smartVideo.bgm = v;
+      return true;
+    case "smartVideoSubtitle":
+      state.smartVideo.subtitle = v;
+      return true;
+    case "voiceSampleSelect":
+      state.voiceSettings.activeVoiceSample = v === "" ? -1 : Number(v);
+      state.voiceSettings.voice = v === "" ? "" : ["甜美女声","磁性男声","少年音","御姐音","温柔女声"][Number(v)];
+      return true;
+    case "voiceEmotionSelect":
+      state.voiceSettings.emotion = v;
+      return true;
+    case "bgmGenreSelect":
+      state.voiceSettings.bgmGenre = v;
+      return true;
+    case "beatSyncSelect":
+      state.voiceSettings.beatSync = v === "" ? null : v === "true";
+      return true;
+    case "subtitleFontSelect":
+      state.voiceSettings.subtitleFont = v;
+      return true;
+    case "subtitleSizeSelect":
+      state.voiceSettings.subtitleSize = v;
+      return true;
+    case "subtitlePositionSelect":
+      state.voiceSettings.subtitlePosition = v;
+      return true;
+    case "highlightKeywordsSelect":
+      state.voiceSettings.highlightKeywords = v === "" ? null : v === "true";
+      return true;
+    case "dialogCategory":
+      if(state.workspaceDialog) state.workspaceDialog.category = v;
+      return true;
+    case "dialogStatus":
+      if(state.workspaceDialog) state.workspaceDialog.status = v;
+      return true;
+    case "aiCopyKeywordPlatform":
+      state.aiCopy.keywordPlatform = v;
+      return true;
+    case "aiCopyLinkPlatform":
+      state.aiCopy.linkPlatform = v;
+      return true;
+    case "aiCopyRewriteGoal":
+      state.aiCopy.rewriteGoal = v;
+      return true;
+    case "aiCopyRewriteTone":
+      state.aiCopy.rewriteTone = v;
+      return true;
+    default:
+      return false;
+  }
 }
 
 const preservedScrollSelectors = [
@@ -1263,9 +1389,9 @@ function renderAccountSettingsPage(){
 /* ── Workspace Header ── */
 function getWorkspaceHeaderMeta(route = state.route){
   const aiInputLabel = state.aiCopy.inputType==="keyword"
-    ? "关键词输入"
+    ? "关键词/卖点"
     : state.aiCopy.inputType==="link"
-      ? "链接输入"
+      ? "商品链接"
       : "改写已有";
 
   switch(route){
@@ -1404,6 +1530,115 @@ function renderFieldBlock({ iconName = "", label, control, hint = "" }){
 }
 
 /* ── Smart Video Page ── */
+function renderAiCopySelect(field, value, options){
+  return renderSelectControl({ field, value, options, placeholder:"请选择" });
+}
+
+function getAiCopyPrimaryText(){
+  if(state.aiCopy.inputType==="keyword"){
+    return [
+      state.aiCopy.keywordInput.trim(),
+      state.aiCopy.keywordAudience.trim() ? `目标人群：${state.aiCopy.keywordAudience.trim()}` : "",
+      state.aiCopy.keywordPlatform ? `平台：${state.aiCopy.keywordPlatform}` : "",
+      state.aiCopy.keywordFocus ? `重点：${state.aiCopy.keywordFocus}` : "",
+    ].filter(Boolean).join(" | ");
+  }
+  if(state.aiCopy.inputType==="link"){
+    return [
+      state.aiCopy.linkInput.trim(),
+      state.aiCopy.linkRequirement.trim() ? `附加要求：${state.aiCopy.linkRequirement.trim()}` : "",
+    ].filter(Boolean).join(" | ");
+  }
+  return [
+    state.aiCopy.rewriteSource.trim(),
+    state.aiCopy.rewriteGoal ? `改写目标：${state.aiCopy.rewriteGoal}` : "",
+    state.aiCopy.rewriteTone ? `语气方向：${state.aiCopy.rewriteTone}` : "",
+    state.aiCopy.rewriteKeep.trim() ? `保留信息：${state.aiCopy.rewriteKeep.trim()}` : "",
+  ].filter(Boolean).join(" | ");
+}
+
+function getAiCopyGenerateLabel(){
+  if(state.aiCopy.inputType==="link") return "解析链接并生成";
+  if(state.aiCopy.inputType==="rewrite") return "改写并生成";
+  return "生成脚本";
+}
+
+function getAiCopyValidationMessage(){
+  if(state.aiCopy.inputType==="keyword" && !state.aiCopy.keywordInput.trim()) return "请先输入关键词或核心卖点。";
+  if(state.aiCopy.inputType==="link" && !state.aiCopy.linkInput.trim()) return "请先输入商品链接。";
+  if(state.aiCopy.inputType==="rewrite" && !state.aiCopy.rewriteSource.trim()) return "请先粘贴需要改写的原文。";
+  return "";
+}
+
+function renderAiCopyInputPanel(){
+  const ai = state.aiCopy;
+  if(ai.inputType==="link"){
+    return `
+      <div class="ai-copy-mode-panel">
+        ${renderFieldBlock({
+          iconName:"link",
+          label:"商品链接",
+          control:`<div class="workspace-input-box"><input data-field="aiCopyLinkInput" type="text" placeholder="粘贴淘宝 / 抖音 / 京东 / 拼多多商品链接" value="${escapeHtml(ai.linkInput)}" /></div>`
+        })}
+        ${renderFieldBlock({
+          iconName:"edit",
+          label:"附加要求",
+          control:`<div class="workspace-textarea-box ai-copy-textarea-box--compact"><textarea data-field="aiCopyLinkRequirement" placeholder="例如：更偏强转化口播、前三秒直接给利益点、避免夸张承诺...">${escapeHtml(ai.linkRequirement)}</textarea></div>`
+        })}
+      </div>`;
+  }
+
+  if(ai.inputType==="rewrite"){
+    return `
+      <div class="ai-copy-mode-panel">
+        ${renderFieldBlock({
+          iconName:"type",
+          label:"原始文案",
+          control:`<div class="workspace-textarea-box"><textarea data-field="aiCopyRewriteSource" placeholder="粘贴已有脚本、商品文案、直播口播稿或竞品标题...">${escapeHtml(ai.rewriteSource)}</textarea></div>`
+        })}
+        <div class="workspace-form-grid ai-copy-form-grid">
+          ${renderFieldBlock({
+            label:"改写目标",
+            control:renderAiCopySelect("aiCopyRewriteGoal", ai.rewriteGoal, ["口播化重写","缩短成短视频脚本","增强转化力度","改成平台标题版"])
+          })}
+          ${renderFieldBlock({
+            label:"语气方向",
+            control:renderAiCopySelect("aiCopyRewriteTone", ai.rewriteTone, ["自然种草","专业测评","强钩子带货","真实分享"])
+          })}
+        </div>
+        ${renderFieldBlock({
+          label:"必须保留的信息",
+          control:`<div class="workspace-input-box"><input data-field="aiCopyRewriteKeep" type="text" placeholder="例如：品牌名、价格、活动机制、特定关键词" value="${escapeHtml(ai.rewriteKeep)}" /></div>`
+        })}
+      </div>`;
+  }
+
+  return `
+    <div class="ai-copy-mode-panel">
+      ${renderFieldBlock({
+        iconName:"tag",
+        label:"关键词 / 卖点输入",
+        control:`<div class="workspace-textarea-box"><textarea data-field="aiCopyKeywordInput" placeholder="输入商品名称、核心卖点、使用场景、价格优势、目标人群...">${escapeHtml(ai.keywordInput)}</textarea></div>`
+      })}
+      <div class="workspace-form-grid ai-copy-form-grid">
+        ${renderFieldBlock({
+          iconName:"user",
+          label:"目标人群",
+          control:`<div class="workspace-input-box"><input data-field="aiCopyKeywordAudience" type="text" placeholder="例如：学生党 / 宝妈 / 本地门店用户" value="${escapeHtml(ai.keywordAudience)}" /></div>`
+        })}
+        ${renderFieldBlock({
+          iconName:"globe",
+          label:"发布平台",
+          control:renderAiCopySelect("aiCopyKeywordPlatform", ai.keywordPlatform, ["抖音","小红书","视频号","快手"])
+        })}
+      </div>
+      ${renderFieldBlock({
+        label:"输出重点",
+        control:`<div class="selector-row selector-row--wrap">${renderSelectorChips(["卖点拆解","种草转化","口播带货"], ai.keywordFocus, "ai-keyword-focus", "selector-chip--compact")}</div>`
+      })}
+    </div>`;
+}
+
 function renderSmartVideoPage(){
   const smartVoiceOptions = ["智能推荐", "甜美女声", "磁性男声", "少年音", "御姐音", "温柔女声"];
   const smartBgmOptions = ["智能推荐", "流行", "轻音乐", "电子", "古风", "嘻哈"];
@@ -1536,11 +1771,13 @@ function renderAiCopyPage(){
             <div class="workspace-textarea-box"><textarea data-field="aiCopyPrompt" placeholder="输入商品名称、核心卖点、目标人群...">${escapeHtml(state.aiCopy.prompt)}</textarea></div>
           </section>
           <section class="workspace-section">
-            <div class="workspace-section-head">
-              <h3>脚本风格</h3>
-              <button class="workspace-inline-btn" data-action="toggle-custom-ai-style">${icon("plus",12)} 自定义</button>
+            <div class="workspace-field ai-copy-style-field">
+              <div class="ai-copy-style-head">
+                <span class="workspace-field-label">脚本风格</span>
+                <button class="workspace-inline-btn" data-action="toggle-custom-ai-style">${icon("plus",12)} 自定义</button>
+              </div>
+              <div class="selector-row selector-row--wrap">${renderSelectorChips(scriptStyles,state.aiCopy.style,"ai-style","selector-chip--compact")}</div>
             </div>
-            <div class="selector-row selector-row--wrap">${renderSelectorChips(scriptStyles,state.aiCopy.style,"ai-style")}</div>
             ${state.aiCopy.isAddingCustomStyle ? `
               <div class="workspace-inline-input-row">
                 <input class="page-search-input workspace-inline-input" data-field="aiCopyCustomStyleDraft" type="text" placeholder="输入自定义脚本风格，例如：直播拆解 / 反差反转" value="${escapeHtml(state.aiCopy.customStyleDraft)}" />
@@ -1584,6 +1821,73 @@ function renderAiCopyPage(){
 }
 
 /* ── Smart Edit Page ── */
+function renderAiCopyPage(){
+  const baseScriptStyles = ["剧情植入","测评对比","痛点共鸣","口播推荐","种草安利","场景植入","情感向","知识科普"];
+  const scriptStyles = [...baseScriptStyles, ...state.aiCopy.customStyles];
+  return `
+    <div class="workspace-shell workspace-shell--dark">
+      ${renderWorkspaceHeader()}
+      <main class="workspace-two-column">
+        <aside class="workspace-sidebar-panel">
+          <section class="workspace-section">
+            <h3>输入类型</h3>
+            <div class="segmented-control">
+              <button class="${classNames("segment-button",state.aiCopy.inputType==="keyword"&&"is-active")}" data-ai-input="keyword">关键词/卖点</button>
+              <button class="${classNames("segment-button",state.aiCopy.inputType==="link"&&"is-active")}" data-ai-input="link">商品链接</button>
+              <button class="${classNames("segment-button",state.aiCopy.inputType==="rewrite"&&"is-active")}" data-ai-input="rewrite">改写已有</button>
+            </div>
+            ${renderAiCopyInputPanel()}
+          </section>
+          <section class="workspace-section">
+            <div class="workspace-field ai-copy-style-field">
+              <div class="ai-copy-style-head">
+                <span class="workspace-field-label">脚本风格</span>
+                <button class="workspace-inline-btn" data-action="toggle-custom-ai-style">${icon("plus",12)} 自定义</button>
+              </div>
+              <div class="selector-row selector-row--wrap">${renderSelectorChips(scriptStyles,state.aiCopy.style,"ai-style","selector-chip--compact")}</div>
+            </div>
+            ${state.aiCopy.isAddingCustomStyle ? `
+              <div class="workspace-inline-input-row">
+                <input class="page-search-input workspace-inline-input" data-field="aiCopyCustomStyleDraft" type="text" placeholder="输入自定义脚本风格，例如：直播拆解 / 反差反转" value="${escapeHtml(state.aiCopy.customStyleDraft)}" />
+                <button class="btn btn--dark workspace-inline-action" data-action="save-custom-ai-style">保存</button>
+                <button class="btn btn--ghost workspace-inline-action" data-action="cancel-custom-ai-style">取消</button>
+              </div>` : ""}
+          </section>
+          <button class="btn btn--light btn--wide" data-action="ai-generate">${icon("sparkles",14)} ${getAiCopyGenerateLabel()}</button>
+        </aside>
+        <section class="workspace-main-panel">
+          ${state.aiCopy.generated?`
+            <div class="script-results">
+              ${aiScripts.map((script,idx)=>`
+                <article class="${classNames("script-panel",state.aiCopy.activeScript===idx&&"is-active")}">
+                  <div class="script-panel-head">
+                    <h2>${script.name}</h2>
+                    <div class="script-panel-actions">
+                      <button data-action="edit-ai-script" data-script-index="${idx}">${icon("edit",12)} 编辑</button>
+                      <button data-action="rotate-ai-script" data-script-index="${idx}">${icon("refresh",12)} 换一批</button>
+                      <button class="btn btn--ghost" data-action="go-storyboard-match">${icon("layers",12)} 分镜匹配</button>
+                      <button class="btn btn--light" data-route="smart-video" data-stage="results">${icon("video",12)} 一键成片</button>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+                    <span style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(168,85,247,0.1);color:#a855f7">${icon("zap",10)} 钩子强度 ${script.score.hook}</span>
+                    <span style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(245,158,11,0.15);color:#fbbf24">${icon("target",10)} 营销感 ${script.score.marketing}</span>
+                    <span style="font-size:11px;padding:4px 10px;border-radius:4px;background:rgba(16,185,129,0.15);color:#34d399">${icon("eye",10)} 可视化 ${script.score.visual}</span>
+                  </div>
+                  <div class="script-table">
+                    ${script.segments.map(seg=>`<div class="script-row"><span>${seg.time}</span><strong>${seg.type}</strong><p>${seg.text}</p></div>`).join("")}
+                  </div>
+                </article>`).join("")}
+            </div>`
+          :state.aiCopy.isGenerating?`
+            <div class="processing-panel processing-panel--copy"><div class="processing-ring"></div><h2>脚本生成中</h2><p>正在执行卖点提炼、平台适配、违禁词过滤与分镜拆解。</p>
+              <div class="processing-steps">${["提炼卖点","拆分镜头","校验合规","输出脚本"].map((s,i)=>`<div class="processing-step ${i<2?"is-done":i===2?"is-current":""}"><span>0${i+1}</span><strong>${s}</strong></div>`).join("")}</div></div>`
+          :`<div class="empty-stage empty-stage--copy"><div class="empty-stage-icon">${icon("wand",48)}</div><h2>生成你的第一条脚本</h2><p>在左侧选择输入方式并补充对应信息，AI 会按不同模式生成更贴合的文案结构。</p></div>`}
+        </section>
+      </main>
+    </div>`;
+}
+
 function renderSmartEditPage(){
   const storyboardClips = editorStoryboard.map((clip, index) => (
     index === state.smartEdit.activeClip
@@ -2823,6 +3127,32 @@ function renderApp({ preserveScroll = true } = {}){
 
 /* ── Event Delegation ── */
 document.addEventListener("click", e => {
+  const clickedInsideCustomSelect = !!e.target.closest("[data-select-field]");
+  const hadOpenSelect = !!state.openSelect;
+
+  const selectOption = e.target.closest("[data-select-option]");
+  if(selectOption){
+    const field = selectOption.dataset.selectOption;
+    const value = selectOption.dataset.selectValue ?? "";
+    if(applySelectFieldValue(field, value)){
+      state.openSelect = null;
+      renderApp();
+      return;
+    }
+  }
+
+  const selectToggle = e.target.closest("[data-select-toggle]");
+  if(selectToggle){
+    const field = selectToggle.dataset.selectToggle;
+    state.openSelect = state.openSelect === field ? null : field;
+    renderApp();
+    return;
+  }
+
+  if(hadOpenSelect && !clickedInsideCustomSelect){
+    state.openSelect = null;
+  }
+
   if(e.target.matches("[data-workspace-dialog-backdrop]")){
     closeWorkspaceDialog();
     return;
@@ -2931,10 +3261,36 @@ document.addEventListener("click", e => {
   if(dlSingle){ showToast("视频下载中...","success"); return; }
 
   const aiInput = e.target.closest("[data-ai-input]");
-  if(aiInput){ state.aiCopy.inputType=aiInput.dataset.aiInput; renderApp(); return; }
+  if(aiInput){
+    state.aiCopy.inputType=aiInput.dataset.aiInput;
+    state.aiCopy.generated=false;
+    renderApp();
+    return;
+  }
+
+  const aiKeywordFocus = e.target.closest("[data-ai-keyword-focus]");
+  if(aiKeywordFocus){
+    const nextValue = aiKeywordFocus.dataset.aiKeywordFocus;
+    state.aiCopy.keywordFocus = state.aiCopy.keywordFocus === nextValue ? "" : nextValue;
+    renderApp();
+    return;
+  }
+
+  const aiLinkFocus = e.target.closest("[data-ai-link-focus]");
+  if(aiLinkFocus){
+    const nextValue = aiLinkFocus.dataset.aiLinkFocus;
+    state.aiCopy.linkFocus = state.aiCopy.linkFocus === nextValue ? "" : nextValue;
+    renderApp();
+    return;
+  }
 
   const aiStyle = e.target.closest("[data-ai-style]");
-  if(aiStyle){ state.aiCopy.style=aiStyle.dataset.aiStyle; renderApp(); return; }
+  if(aiStyle){
+    const nextValue = aiStyle.dataset.aiStyle;
+    state.aiCopy.style = state.aiCopy.style === nextValue ? "" : nextValue;
+    renderApp();
+    return;
+  }
 
   const toggleCustomAiStyle = e.target.closest("[data-action='toggle-custom-ai-style']");
   if(toggleCustomAiStyle){
@@ -2970,7 +3326,15 @@ document.addEventListener("click", e => {
   }
 
   const aiGen = e.target.closest("[data-action='ai-generate']");
-  if(aiGen){ startAiCopyGeneration(); return; }
+  if(aiGen){
+    const validationMessage = getAiCopyValidationMessage();
+    if(validationMessage){
+      showToast(validationMessage);
+      return;
+    }
+    startAiCopyGeneration();
+    return;
+  }
 
   const editAiScript = e.target.closest("[data-action='edit-ai-script']");
   if(editAiScript){
@@ -3283,6 +3647,10 @@ document.addEventListener("click", e => {
 
   const toggleHL = e.target.closest("[data-action='toggle-highlight']");
   if(toggleHL){ state.voiceSettings.highlightKeywords=!state.voiceSettings.highlightKeywords; renderApp(); return; }
+
+  if(hadOpenSelect && !clickedInsideCustomSelect){
+    renderApp();
+  }
 });
 
 /* ── Input handling ── */
@@ -3321,6 +3689,16 @@ document.addEventListener("input", e => {
       renderApp();
       break;
     case "aiCopyPrompt": state.aiCopy.prompt=v; break;
+    case "aiCopyKeywordInput": state.aiCopy.keywordInput=v; break;
+    case "aiCopyKeywordAudience": state.aiCopy.keywordAudience=v; break;
+    case "aiCopyKeywordPlatform": state.aiCopy.keywordPlatform=v; renderApp(); break;
+    case "aiCopyLinkInput": state.aiCopy.linkInput=v; break;
+    case "aiCopyLinkPlatform": state.aiCopy.linkPlatform=v; renderApp(); break;
+    case "aiCopyLinkRequirement": state.aiCopy.linkRequirement=v; break;
+    case "aiCopyRewriteSource": state.aiCopy.rewriteSource=v; break;
+    case "aiCopyRewriteGoal": state.aiCopy.rewriteGoal=v; renderApp(); break;
+    case "aiCopyRewriteTone": state.aiCopy.rewriteTone=v; renderApp(); break;
+    case "aiCopyRewriteKeep": state.aiCopy.rewriteKeep=v; break;
     case "smartEditVoiceCopy":
       state.smartEdit.voiceCopy = v;
       if(editorStoryboard[state.smartEdit.activeClip]){
@@ -3401,6 +3779,10 @@ document.addEventListener("change", e => {
   const field = e.target.dataset.field;
   if(!field) return;
   const v = e.target.value;
+  if(applySelectFieldValue(field, v)){
+    renderApp();
+    return;
+  }
   switch(field){
     case "smartVideoVoice":
       state.smartVideo.voice = v;
@@ -3466,6 +3848,11 @@ document.addEventListener("keydown", e => {
   if((state.route==="login" || state.route==="register") && e.key==="Enter" && document.activeElement?.closest(".auth-form")){
     e.preventDefault();
     submitAuthForm();
+    return;
+  }
+  if(e.key==="Escape" && state.openSelect){
+    state.openSelect = null;
+    renderApp();
     return;
   }
   if(e.key==="Escape" && state.workspaceDialog){
