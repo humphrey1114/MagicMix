@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "name": "MagicMix Design Tokens",
+    "version": "1.0.0",
+    "description": "For Figma variables, Tokens Studio and front-end handoff.",
+    "source": "MagicMix local prototype"
+  },
+  "color": {
+    "bg": {
+      "page": "#F6F8FB",
+      "public": "#FFFFFF",
+      "workspace": "#0B0F14",
+      "workspace_soft": "#0C1117",
+      "sidebar": "#0D1117"
+    },
+    "surface": {
+      "card": "#FFFFFF",
+      "card_dark": "#111827",
+      "card_dark_2": "#18202D",
+      "panel_dark": "rgba(255,255,255,0.04)",
+      "panel_dark_hover": "rgba(255,255,255,0.08)",
+      "input": "#F7F8FA",
+      "input_dark": "rgba(255,255,255,0.08)"
+    },
+    "border": {
+      "light": "rgba(16,24,40,0.08)",
+      "dark": "rgba(255,255,255,0.08)",
+      "dark_soft": "rgba(255,255,255,0.06)",
+      "accent": "rgba(19,210,177,0.28)"
+    },
+    "text": {
+      "primary": "#101828",
+      "secondary": "#475467",
+      "muted": "#667085",
+      "soft_dark": "#8B9AB0",
+      "inverse": "#FFFFFF"
+    },
+    "accent": {
+      "primary": "#13D2B1",
+      "primary_2": "#31D7BD",
+      "primary_soft": "rgba(19,210,177,0.12)",
+      "primary_soft_dark": "rgba(19,210,177,0.18)",
+      "success": "#0FB89C",
+      "danger": "#FF3A3A"
+    },
+    "chart": {
+      "bar_1": "#66E6CF",
+      "bar_2": "#1AB7A4",
+      "track": "rgba(255,255,255,0.08)"
+    }
+  },
+  "radius": {
+    "xs": 10,
+    "sm": 12,
+    "md": 16,
+    "lg": 20,
+    "xl": 24,
+    "xxl": 30,
+    "full": 999
+  },
+  "spacing": {
+    "4": 4,
+    "8": 8,
+    "10": 10,
+    "12": 12,
+    "14": 14,
+    "16": 16,
+    "18": 18,
+    "20": 20,
+    "22": 22,
+    "24": 24,
+    "26": 26,
+    "28": 28,
+    "30": 30,
+    "32": 32,
+    "34": 34,
+    "36": 36,
+    "40": 40,
+    "42": 42,
+    "48": 48,
+    "56": 56
+  },
+  "size": {
+    "button": {
+      "sm_height": 40,
+      "md_height": 44,
+      "lg_height": 52
+    },
+    "input": {
+      "md_height": 56,
+      "auth_height": 60
+    },
+    "logo": {
+      "mark": 48,
+      "avatar": 40
+    },
+    "preview": {
+      "video_card_height": 254,
+      "result_card_height": 300,
+      "phone_preview_height": 760
+    }
+  },
+  "shadow": {
+    "card_light": "0 14px 32px rgba(15,23,42,0.06)",
+    "card_hover": "0 24px 42px rgba(15,23,42,0.10)",
+    "card_dark": "0 18px 40px rgba(0,0,0,0.18)",
+    "hero": "0 26px 60px rgba(15,23,42,0.18)",
+    "overlay": "0 20px 48px rgba(15,23,42,0.18)"
+  },
+  "typography": {
+    "display": {
+      "hero": {
+        "fontSize": 96,
+        "lineHeight": 0.95,
+        "fontWeight": 800
+      },
+      "section": {
+        "fontSize": 52,
+        "lineHeight": 1.1,
+        "fontWeight": 800
+      }
+    },
+    "heading": {
+      "h1": {
+        "fontSize": 42,
+        "lineHeight": 1.1,
+        "fontWeight": 800
+      },
+      "h2": {
+        "fontSize": 34,
+        "lineHeight": 1.2,
+        "fontWeight": 800
+      },
+      "h3": {
+        "fontSize": 28,
+        "lineHeight": 1.2,
+        "fontWeight": 800
+      },
+      "h4": {
+        "fontSize": 24,
+        "lineHeight": 1.3,
+        "fontWeight": 700
+      }
+    },
+    "body": {
+      "lg": {
+        "fontSize": 18,
+        "lineHeight": 1.7,
+        "fontWeight": 400
+      },
+      "md": {
+        "fontSize": 16,
+        "lineHeight": 1.6,
+        "fontWeight": 400
+      },
+      "sm": {
+        "fontSize": 14,
+        "lineHeight": 1.5,
+        "fontWeight": 500
+      }
+    },
+    "label": {
+      "caps": {
+        "fontSize": 12,
+        "lineHeight": 1.4,
+        "fontWeight": 700
+      }
+    }
+  },
+  "layout": {
+    "grid": {
+      "base": 8,
+      "desktop_max_width": 1200,
+      "dashboard_sidebar_width": 304,
+      "workspace_left_width": 460
+    },
+    "breakpoints": {
+      "desktop": 1440,
+      "tablet": 980,
+      "mobile": 760
+    }
+  },
+  "components": {
+    "button": {
+      "variants": ["primary", "secondary", "ghost", "danger", "dark"],
+      "sizes": ["sm", "md", "lg"],
+      "states": ["default", "hover", "disabled", "loading"]
+    },
+    "input": {
+      "variants": ["text", "textarea", "search", "range"],
+      "states": ["default", "focus", "filled", "disabled", "error"]
+    },
+    "segmented": {
+      "variants": ["3-tab"],
+      "states": ["default", "active"]
+    },
+    "chip": {
+      "variants": ["filter", "status", "metric"],
+      "states": ["default", "active"]
+    },
+    "card": {
+      "variants": [
+        "hero",
+        "stat",
+        "feature",
+        "video",
+        "result",
+        "story",
+        "account",
+        "analytics"
+      ],
+      "states": ["default", "hover", "active"]
+    },
+    "feedback": {
+      "toast": ["neutral", "success", "error"],
+      "progress_step": ["pending", "current", "done"]
+    }
+  }
+}

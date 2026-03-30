@@ -1,0 +1,12 @@
+node_modules/
+.vercel/
+.claude/
+txt/
+C*prototype/
+
+magicmix.db
+magicmix.db-shm
+magicmix.db-wal
+
+*.log
+.DS_Store
