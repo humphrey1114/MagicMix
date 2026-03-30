@@ -5737,8 +5737,8 @@ body {
 }
 
 .dashboard-hero {
-  background: linear-gradient(135deg, #1f1f26 0%, #302d3a 58%, #494453 100%);
-  box-shadow: 0 24px 48px rgba(18, 18, 24, 0.16);
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 42%, #ec4899 100%);
+  box-shadow: 0 24px 52px rgba(168, 85, 247, 0.18);
 }
 
 .workspace-shell--dark {
